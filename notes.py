@@ -15,13 +15,8 @@ import json
 
 notes = {}
 fn = "notes.json"
-functions = ["open", "add", "read", "save", "change", "del", "exit"]
-# print("Hello to the notes!")
+functions = ["open", "add", "read", "find", "change", "del", "exit"]
 
-# always open empty file after reloaded, bad idea
-# with open(fn, 'w+') as file:
-#     json.dump(notes, file)
-    
 # open notes automatically
 def openNotes():
     try:
@@ -37,32 +32,12 @@ def addNote():
         notes = {}  
 
     with open(fn, "w", encoding="utf-8") as file:
-        notes[input('Put number or name your note: ')] = input("Put the body your note for added: ")
+        notes[input('Put the name your note: ')] = input("Enter the record your note: ")
+        # if keys only numbers we can sort them
+        # sorted(notes, key=lambda t: tuple(map(int,t.split(": "))))
         file.seek(0, 0)
         json.dump(notes, file, indent=2, ensure_ascii=False)
-        print("Your notes was added and saved")    
-    
-
-    # try:
-    #     with open(fn, "r+", encoding="utf-8") as file:
-    #         notes = json.load(file)
-    #         notes[input('Put name your note: ')] = input("Put the body your note for added: ")
-    #         file.seek(0, 0)
-    #         json.dump(notes, file, indent=2, ensure_ascii=False)
-    #         print("Your notes was added and saved")    
-    # except:
-    #     notes = {}    
-
-def writeNote(note):
-    try:
-        date = json.load(open(fn))
-    except:
-        data = {}
-    
-    data.update(note)
-
-    with open(fn, 'w') as file:
-        json.dump(date, file, indent=2, ensure_ascii=False)
+        print("Your notes was added and saved")
 
 # read all notes
 def readNotes():
@@ -72,7 +47,7 @@ def readNotes():
             notes = json.load(jsonFile)
 
             for key, value in notes.items():
-                print(f"Note #{key}: Record: {value} \n")
+                print(f"\n Note #{key}: Record: {value}")
     except:
         notes = {}
         print("You do not have any note, please enter add in terminal")
@@ -80,46 +55,71 @@ def readNotes():
     with open(fn, 'w') as file:
         json.dump(notes, file, indent=2, ensure_ascii=False)
 
-    # try:
-    #     notes = json.load(open(fn))
-    # except:
-    #     notes = {}  
-    #     print("You do not have any note, please enter add in terminal")
-    
-    # with open(fn) as jsonFile:
-    #     notes = json.load(jsonFile)
+# find note
+def find():
+    notes = json.load(open(fn))
+    with open(fn) as jsonFile:
+        notes = json.load(jsonFile)
 
-    #     for key, value in notes.items():
-    #         print(f"Note #{key}: Record: {value} \n")
+        yourKey = input('Put the name your note: ')
+        for key, value in notes.items():    
+            if key == yourKey:
+                print(f"Record #{yourKey}: {value}")
+                # value = notes.get(key)
+        #     else:
+        #         print(f"Note #{yourKey} not found, try again")
+        #     #     break
+        # return print(f"Record #{yourKey}: {value}") 
+        
+# change note if you need
+def change():
+    notes = json.load(open(fn))
+    with open(fn) as jsonFile:
+        notes = json.load(jsonFile)
+        
+        yourKey = input('Put the name your note: ')
+        for key in notes.items():    
+            if key == yourKey:
+                notes[key] = input("Enter the record your note: ")
+    with open(fn, 'w') as file:
+        json.dump(notes, file, indent=2, ensure_ascii=False)
+        print("Your note was changed")
+
+# delite note on key
+def delite():
+    notes = json.load(open(fn))
+    with open(fn) as jsonFile:
+        notes = json.load(jsonFile)
+        
+        yourKey = input('Put the name your note: ')
+        for key in list(notes):    
+            if key == yourKey:
+                del notes[key]
+    with open(fn, 'w') as file:
+        json.dump(notes, file, indent=2, ensure_ascii=False)
+        print("Your note was delite")
+        print(f"Your notes: {notes}")
 
 def putCommand():
     while True:
         command = input(f"Put a command: '{functions}': ")
-        # with open(fn, 'w+') as file:
-        #     json.dump(notes, file)
         if command == "open":
-            print('OPEN command')
             print("Your notes were opened")
             openNotes()
         elif command == "exit":
-            print('EXIT command')
-            # save()
             print("Goodbye!")
             break
         elif command == "add":
-                print('ADD command')
-                addNote()
+            addNote()
         elif command == "read":
-            print('READ command')
             readNotes()    
-        elif command == "save":
-                print('SAVE command')
+        elif command == "find":
+            find()
         elif command == "change":
-                print('CHANGE command')
+            change()
         elif command == "del": 
-                print('DEL command')
+            delite()
         else:
-            print('ERROR command')
             print(f"Unidentified command, please put only command for using the notes")
 
 
@@ -127,4 +127,4 @@ def main():
     putCommand()
 
 if __name__ == '__main__':
-     main()
+    main()
